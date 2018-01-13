@@ -42,14 +42,21 @@ io.on('connection', (socket) => {
   //   console.log('create email: ', newEmail);
   // });
 
-  socket.emit('newMessage', {
-    from: 'blahblah@example.com',
-    text: 'hey whats up guyssss',
-    createdAt: Date.now()
-  });
+  // socket.emit('newMessage', {
+  //   from: 'blahblah@example.com',
+  //   text: 'hey whats up guyssss',
+  //   createdAt: new Date().getTime()
+  // });
 
   socket.on('createMessage', (newMessage) => {
-    console.log('create email: ', newMessage);
+    // console.log('create email: ', newMessage);
+    //while socket.emit emits an event to a single connection
+    //io.emit emits an event to all connections
+    io.emit('newMessage', {
+      from: newMessage.from,
+      text: newMessage.text,
+      createdAt: new Date().getTime()
+    });
   });
 
   //default event disconnect
