@@ -31,6 +31,28 @@ app.use(express.static(publicPath));
 io.on('connection', (socket) => {
   console.log('new user connected');
 
+  //emit will create events rather than on which listens to events
+  // socket.emit('newEmail', {
+  //   from: "blah@example.com",
+  //   text: "hey whats up",
+  //   createdAt: 123
+  // });
+
+  // socket.on('createEmail', (newEmail) => {
+  //   console.log('create email: ', newEmail);
+  // });
+
+  socket.emit('newMessage', {
+    from: 'blahblah@example.com',
+    text: 'hey whats up guyssss',
+    createdAt: Date.now()
+  });
+
+  socket.on('createMessage', (newMessage) => {
+    console.log('create email: ', newMessage);
+  });
+
+  //default event disconnect
   socket.on('disconnect', () => {
     console.log('user disconnected');
   });
