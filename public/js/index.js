@@ -10,10 +10,10 @@ socket.on('connect', () => {
   //   text: "hey, how are you, when do you wanna meet?"
   // });
 
-  socket.emit('createMessage', {
-    to: 'example@example.com',
-    text: 'hey man do you remember me???'
-  });
+  // socket.emit('createMessage', {
+  //   to: 'example@example.com',
+  //   text: 'hey man do you remember me???'
+  // });
 });
 
 socket.on('disconnect', () => {
@@ -28,5 +28,5 @@ socket.on('disconnect', () => {
 
 
 socket.on('newMessage', (message) => {
-  console.log('new message: ', message);
+  console.log(`${message.from}: `, message.text);
 });

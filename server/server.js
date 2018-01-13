@@ -48,15 +48,28 @@ io.on('connection', (socket) => {
   //   createdAt: new Date().getTime()
   // });
 
+  socket.emit('newMessage', {from: 'admin', text: 'welcome, new user!'});
+  socket.broadcast.emit('newMessage', {from: 'admin', text: 'new user has joined'});
+
   socket.on('createMessage', (newMessage) => {
     // console.log('create email: ', newMessage);
     //while socket.emit emits an event to a single connection
     //io.emit emits an event to all connections
+
     io.emit('newMessage', {
       from: newMessage.from,
       text: newMessage.text,
       createdAt: new Date().getTime()
     });
+
+    //braoadcast will send, everyone BUT the user specified
+    //thus in this case everyone will see the message you sent
+    //except yourself
+    // socket.broadcast.emit('newMessage', {
+    //   from: newMessage.from,
+    //   text: newMessage.text,
+    //   createdAt: new Date().getTime()
+    // });
   });
 
   //default event disconnect
