@@ -52,12 +52,13 @@ io.on('connection', (socket) => {
   socket.emit('newMessage', generateMessage('admin', 'welcome new user!'));
   socket.broadcast.emit('newMessage', generateMessage('admin', 'new user has joined chat'));
 
-  socket.on('createMessage', (newMessage) => {
+  socket.on('createMessage', (newMessage, callback) => {
     // console.log('create email: ', newMessage);
     //while socket.emit emits an event to a single connection
     //io.emit emits an event to all connections
 
     io.emit('newMessage', generateMessage(newMessage.from, newMessage.text));
+    callback('this is from the server');
 
     //braoadcast will send, everyone BUT the user specified
     //thus in this case everyone will see the message you sent
