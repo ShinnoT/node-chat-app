@@ -36,7 +36,7 @@ socket.on('newMessage', (message) => {
 
 
 
-//form JS with normal JS and a little jQuery
+//form JS
 let chatForm = document.querySelector('#chat-form');
 chatForm.addEventListener('submit', (event) => {
   event.preventDefault();
