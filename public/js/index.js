@@ -29,10 +29,17 @@ socket.on('disconnect', () => {
 
 socket.on('newMessage', (message) => {
   console.log(`${message.from}: `, message.text);
-  let listMessage = `<li>${message.from}: ${message.text}</li>`
+  //ALTHOUGH THIS METHOD WORKS, IT DOESNT PROTECT AGAINST HTML OR JS INJECTIONS
+  //BECAUSE ITS JUST STRING INTERPOLATION
+  let listMessage = `<li>${message.from}: ${message.text}</li>`;
   document.querySelector('#messages').insertAdjacentHTML('beforeend', listMessage);
 });
 
+socket.on('newLocationMessage', (location) => {
+  console.log(`${location.text}`);
+  let listLocation = `<li><a target="_blank" href="${location.url}">my location</a></li>`;
+  document.querySelector('#messages').insertAdjacentHTML('beforeend', listLocation);
+});
 
 
 
@@ -45,5 +52,22 @@ chatForm.addEventListener('submit', (event) => {
     text: document.querySelector('input[name=message]').value
   }, () => {
 
+  });
+});
+
+let locationButton = document.querySelector('#send-location');
+locationButton.addEventListener('click', (event) => {
+  event.preventDefault();
+  if (!navigator.geolocation) {
+    return alert('geolocation not supported by your browser, sorry');
+  }
+
+  navigator.geolocation.getCurrentPosition((position) => {
+    socket.emit('createLocationMessage', {
+      latitude: position.coords.latitude,
+      longitude: position.coords.longitude
+    });
+  }, () => {
+    alert('unable to fetch location :(');
   });
 });
