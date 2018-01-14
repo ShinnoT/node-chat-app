@@ -37,7 +37,7 @@ socket.on('newMessage', (message) => {
 
 socket.on('newLocationMessage', (location) => {
   console.log(`${location.text}`);
-  let listLocation = `<li><a target="_blank" href="${location.url}">my location</a></li>`;
+  let listLocation = `<li>user: <a target="_blank" href="${location.url}">my location</a></li>`;
   document.querySelector('#messages').insertAdjacentHTML('beforeend', listLocation);
 });
 
@@ -47,11 +47,12 @@ socket.on('newLocationMessage', (location) => {
 let chatForm = document.querySelector('#chat-form');
 chatForm.addEventListener('submit', (event) => {
   event.preventDefault();
+  let inputTextbox = document.querySelector('input[name=message]');
   socket.emit('createMessage', {
     from: 'user',
-    text: document.querySelector('input[name=message]').value
+    text: inputTextbox.value
   }, () => {
-
+    inputTextbox.value = null;
   });
 });
 
@@ -62,12 +63,22 @@ locationButton.addEventListener('click', (event) => {
     return alert('geolocation not supported by your browser, sorry');
   }
 
+  locationButton.disabled = true;
+  locationButton.innerText = "Sending location...";
+
+  let reEnableButton = () => {
+    locationButton.disabled = false;
+    locationButton.innerText = "Send location";
+  };
+
   navigator.geolocation.getCurrentPosition((position) => {
+    reEnableButton();
     socket.emit('createLocationMessage', {
       latitude: position.coords.latitude,
       longitude: position.coords.longitude
     });
   }, () => {
+    reEnableButton();
     alert('unable to fetch location :(');
   });
 });
