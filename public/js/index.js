@@ -29,18 +29,40 @@ socket.on('disconnect', () => {
 
 socket.on('newMessage', (message) => {
   let formattedTime = moment(message.createdAt).format('h:mm a');
-  console.log(`${message.from}: `, message.text);
-  //ALTHOUGH THIS METHOD WORKS, IT DOESNT PROTECT AGAINST HTML OR JS INJECTIONS
-  //BECAUSE ITS JUST STRING INTERPOLATION
-  let listMessage = `<li>${message.from} (${formattedTime}): ${message.text}</li>`;
-  document.querySelector('#messages').insertAdjacentHTML('beforeend', listMessage);
+  let template = document.querySelector('#message-template').innerHTML;
+  console.log(template);
+  let html = Mustache.render(template, {
+    text: message.text,
+    from: message.from,
+    createdAt: formattedTime
+  });
+  document.querySelector('#messages').insertAdjacentHTML('beforeend', html);
+
+
+
+  // let formattedTime = moment(message.createdAt).format('h:mm a');
+  // console.log(`${message.from}: `, message.text);
+  // //ALTHOUGH THIS METHOD WORKS, IT DOESNT PROTECT AGAINST HTML OR JS INJECTIONS
+  // //BECAUSE ITS JUST STRING INTERPOLATION
+  // let listMessage = `<li>${message.from} (${formattedTime}): ${message.text}</li>`;
+  // document.querySelector('#messages').insertAdjacentHTML('beforeend', listMessage);
 });
 
 socket.on('newLocationMessage', (location) => {
   let formattedTime = moment(location.createdAt).format('h:mm a');
-  console.log(`${location.text}`);
-  let listLocation = `<li>user (${formattedTime}): <a target="_blank" href="${location.url}">my location</a></li>`;
-  document.querySelector('#messages').insertAdjacentHTML('beforeend', listLocation);
+  let template = document.querySelector('#location-message-template').innerHTML;
+  let html = Mustache.render(template, {
+    from: 'user',
+    url: location.url,
+    createdAt: formattedTime
+  });
+  document.querySelector('#messages').insertAdjacentHTML('beforeend', html);
+
+
+  // let formattedTime = moment(location.createdAt).format('h:mm a');
+  // console.log(`${location.text}`);
+  // let listLocation = `<li>user (${formattedTime}): <a target="_blank" href="${location.url}">my location</a></li>`;
+  // document.querySelector('#messages').insertAdjacentHTML('beforeend', listLocation);
 });
 
 
