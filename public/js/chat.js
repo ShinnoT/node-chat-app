@@ -37,6 +37,16 @@ socket.on('connect', () => {
   //   to: 'example@example.com',
   //   text: 'hey man do you remember me???'
   // });
+  let params = jQuery.deparam(window.location.search);
+  socket.emit('join', params, (error) => {
+    if (error) {
+      // redirect user back to join page
+      alert(error);
+      window.location.href = '/';
+    } else {
+      console.log('no error in joining');
+    }
+  });
 });
 
 socket.on('disconnect', () => {

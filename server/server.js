@@ -7,6 +7,7 @@ const express = require('express');
 const socketIO = require('socket.io');
 
 const {generateMessage, generateLocationMessage} = require("./utils/message");
+const {isRealString} = require("./utils/validations");
 const publicPath = path.join(__dirname, '../public');
 const port = process.env.PORT || 3000;
 
@@ -51,6 +52,15 @@ io.on('connection', (socket) => {
 
   socket.emit('newMessage', generateMessage('admin', 'welcome new user!'));
   socket.broadcast.emit('newMessage', generateMessage('admin', 'new user has joined chat'));
+  socket.on('join', (params, callback) => {
+    name = params.name;
+    room = params.room;
+    if (!isRealString(name) || !isRealString(room)) {
+      return callback('error: name and room name are required');
+    }
+
+    callback(null);
+  });
 
   socket.on('createMessage', (newMessage, callback) => {
     // console.log('create email: ', newMessage);
