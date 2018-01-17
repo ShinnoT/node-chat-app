@@ -50,15 +50,27 @@ io.on('connection', (socket) => {
   //   createdAt: new Date().getTime()
   // });
 
-  socket.emit('newMessage', generateMessage('admin', 'welcome new user!'));
-  socket.broadcast.emit('newMessage', generateMessage('admin', 'new user has joined chat'));
   socket.on('join', (params, callback) => {
     name = params.name;
     room = params.room;
     if (!isRealString(name) || !isRealString(room)) {
       return callback('error: name and room name are required');
     }
+    socket.join(params.room);
+    // socket.leave('the office fans');
 
+    // io.emit
+    // socket.broadcast.emit
+    // socket.emit
+
+    // io.to('the office fans').emit
+      // this will send message to all users only in the room 'office fans'
+
+    // socket.broadcast.to('the office fans').emit
+      // sends message to everyone but the single user in room 'the office fans'
+
+    socket.emit('newMessage', generateMessage('admin', 'welcome new user!'));
+    socket.broadcast.to(room).emit('newMessage', generateMessage('admin', `${name} has joined room`));
     callback(null);
   });
 
