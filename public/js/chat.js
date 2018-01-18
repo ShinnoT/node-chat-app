@@ -59,6 +59,15 @@ socket.on('disconnect', () => {
 //   console.log('new email: ', email);
 // });
 
+socket.on('updateUserList', (users) => {
+  console.log('users list: ', users);
+  let people = document.querySelector('#users ol');
+  people.innerHTML = null;
+  users.forEach((user) => {
+    let list = `<li>${user}</li>`;
+    people.insertAdjacentHTML('beforeend', list);
+  });
+});
 
 socket.on('newMessage', (message) => {
   let formattedTime = moment(message.createdAt).format('h:mm a');

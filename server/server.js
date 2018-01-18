@@ -8,10 +8,12 @@ const socketIO = require('socket.io');
 
 const {generateMessage, generateLocationMessage} = require("./utils/message");
 const {isRealString} = require("./utils/validations");
+const {Users} = require("./utils/users");
 const publicPath = path.join(__dirname, '../public');
 const port = process.env.PORT || 3000;
 
 const app = express();
+const users = new Users();
 
 
 // const server = http.createServer((request, response) => {
@@ -53,10 +55,17 @@ io.on('connection', (socket) => {
   socket.on('join', (params, callback) => {
     name = params.name;
     room = params.room;
+    id = socket.id;
     if (!isRealString(name) || !isRealString(room)) {
       return callback('error: name and room name are required');
     }
-    socket.join(params.room);
+    socket.join(room);
+    // socket.id is a unique id to the websocket given to every user
+    // here we first remove the user from all other rooms
+    // then add him back to Users class
+    users.removeUser(id);
+    users.addUser(id, name, room);
+    io.to(room).emit('updateUserList', users.getUserList(room));
     // socket.leave('the office fans');
 
     // io.emit
@@ -98,6 +107,13 @@ io.on('connection', (socket) => {
 
   //default event disconnect
   socket.on('disconnect', () => {
+    id = socket.id;
+    let user = users.removeUser(id);
+    if (user) {
+      //will update list of users displayed on client side if user leaves
+      io.to(user.room).emit('updateUserList', users.getUserList(user.room));
+      io.to(user.room).emit('newMessage', generateMessage('admin', `${user.name} has left`));
+    }
     console.log('user disconnected');
   });
 });
