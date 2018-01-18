@@ -87,8 +87,10 @@ io.on('connection', (socket) => {
     // console.log('create email: ', newMessage);
     //while socket.emit emits an event to a single connection
     //io.emit emits an event to all connections
-
-    io.emit('newMessage', generateMessage(newMessage.from, newMessage.text));
+    let user = users.getUser(socket.id);
+    if (user && isRealString(newMessage.text)) {
+      io.to(user.room).emit('newMessage', generateMessage(user.name, newMessage.text));
+    }
     callback('this is from the server');
 
     //braoadcast will send, everyone BUT the user specified
@@ -102,7 +104,10 @@ io.on('connection', (socket) => {
   });
 
   socket.on('createLocationMessage', (newLocation, callback) => {
-    io.emit('newLocationMessage', generateLocationMessage('user', newLocation.latitude, newLocation.longitude));
+    let user = users.getUser(socket.id);
+    if (user) {
+      io.to(user.room).emit('newLocationMessage', generateLocationMessage(user.name, newLocation.latitude, newLocation.longitude));
+    }
   });
 
   //default event disconnect

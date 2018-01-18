@@ -95,7 +95,7 @@ socket.on('newLocationMessage', (location) => {
   let formattedTime = moment(location.createdAt).format('h:mm a');
   let template = document.querySelector('#location-message-template').innerHTML;
   let html = Mustache.render(template, {
-    from: 'user',
+    from: location.from,
     url: location.url,
     createdAt: formattedTime
   });
@@ -116,7 +116,6 @@ chatForm.addEventListener('submit', (event) => {
   event.preventDefault();
   let inputTextbox = document.querySelector('input[name=message]');
   socket.emit('createMessage', {
-    from: 'user',
     text: inputTextbox.value
   }, () => {
     inputTextbox.value = null;
